@@ -32,13 +32,18 @@
                     <form style="width: 400px;" action="{{ .Data.Action }}" method="{{ .Data.ActionMethod }}">
                         <div class="form-group" style="margin-bottom: 10px;">
                           <label for="txtUsername">Username</label>
-                          <input type="text" class="form-control" id="txtUsername" placeholder="Enter username" required>
+                          <input type="text" class="form-control" id="txtUsername" name="username" placeholder="Enter username" required>
                         </div>
-                        <div class="form-group" style="margin-bottom: 10px;">
+                        <div class="form-group" style="margin-bottom: 30px;">
                           <label for="txtPassword">Password</label>
-                          <input type="password" class="form-control" id="txtPassword" placeholder="Enter password" required>
+                          <input type="password" class="form-control" id="txtPassword" name="password" placeholder="Enter password" required>
                         </div>
-                        <button type="submit" class="submit-button" style="margin-top: 20px;">Sign In</button>
+                        {{ if .Data.ErrorMessage}}
+                            <div class="alert alert-danger" role="alert">
+                                {{ .Data.ErrorMessage }}
+                            </div>
+                        {{ end }}
+                        <button type="submit" class="submit-button">Sign In</button>
                     </form>
                 </div>
             </div>

@@ -22,9 +22,12 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 
 	go func() {
+		db := setupDatabaseConnection(ctx)
+		repo := setupRepositories(db)
+		service := setupServices(repo)
 		appServer = &http.Server{
 			Addr:    fmt.Sprintf(":%s", config.Port),
-			Handler: buildRoutes(setupHandler()),
+			Handler: buildRoutes(setupHandler(service)),
 		}
 
 		slog.Info(fmt.Sprintf("starting server on %s", appServer.Addr))

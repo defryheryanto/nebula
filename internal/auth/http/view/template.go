@@ -1,6 +1,10 @@
 package view
 
-import "net/http"
+import (
+	"net/http"
+
+	handlederror "github.com/defryheryanto/nebula/internal/errors"
+)
 
 type LoginTemplateData struct {
 	Action       string
@@ -15,6 +19,12 @@ func NewLoginTemplateData() *LoginTemplateData {
 	}
 }
 
-func (d *LoginTemplateData) TempateName() string {
+func (d *LoginTemplateData) WithError(err error) *LoginTemplateData {
+	handledErr := handlederror.Extract(err)
+	d.ErrorMessage = handledErr.Message
+	return d
+}
+
+func (d *LoginTemplateData) TemplateName() string {
 	return "/template/login.html"
 }

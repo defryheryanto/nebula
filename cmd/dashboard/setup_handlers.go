@@ -8,8 +8,8 @@ type handlers struct {
 	AuthHandler *authview.Handler
 }
 
-func setupHandler() *handlers {
+func setupHandler(s *services) *handlers {
 	return &handlers{
-		AuthHandler: authview.NewHandler(),
+		AuthHandler: authview.NewHandler(s.AuthService),
 	}
 }

@@ -30,6 +30,10 @@ func NewService(
 }
 
 func (s *service) AuthenticateUser(ctx context.Context, username string, password string) (string, error) {
+	if username == "" || password == "" {
+		return "", handlederror.ErrInvalidCredentials
+	}
+
 	targetUser, err := s.userService.GetByUsername(ctx, username)
 	if err != nil {
 		return "", err

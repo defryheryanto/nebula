@@ -27,6 +27,9 @@ func (r *Repository) First(ctx context.Context, filter *user.Filter) (*user.User
 	query, args := builder.GetQuery(sqldb.AndOperator)
 	err := result.scan(r.db.QueryRowContext(ctx, query, args...))
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 

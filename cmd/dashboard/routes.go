@@ -16,5 +16,9 @@ func buildRoutes(h *handlers) http.Handler {
 	root.Get("/login", h.AuthHandler.LoginView)
 	root.Post("/login/action", h.AuthHandler.LoginAction)
 
+	root.Group(func(r chi.Router) {
+		r.Post("/api/logs", h.LogAPIHandler.CreateLog)
+	})
+
 	return root
 }

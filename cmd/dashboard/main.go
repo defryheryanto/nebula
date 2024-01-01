@@ -23,8 +23,11 @@ func main() {
 
 	go func() {
 		db := setupDatabaseConnection(ctx)
-		repo := setupRepositories(db)
+		mongoClient := setupMongoClient(ctx)
+
+		repo := setupRepositories(db, mongoClient)
 		service := setupServices(repo)
+
 		appServer = &http.Server{
 			Addr:    fmt.Sprintf(":%s", config.Port),
 			Handler: buildRoutes(setupHandler(service)),

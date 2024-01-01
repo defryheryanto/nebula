@@ -5,6 +5,7 @@ import (
 	"github.com/defryheryanto/nebula/internal/auth"
 	"github.com/defryheryanto/nebula/internal/encrypt"
 	"github.com/defryheryanto/nebula/internal/encrypt/aes"
+	"github.com/defryheryanto/nebula/internal/logs"
 	"github.com/defryheryanto/nebula/internal/token"
 	jwtservice "github.com/defryheryanto/nebula/internal/token/jwt"
 	"github.com/defryheryanto/nebula/internal/user"
@@ -14,6 +15,7 @@ import (
 type services struct {
 	UserService user.Service
 	AuthService auth.Service
+	LogService  logs.Service
 }
 
 func setupServices(r *repositories) *services {
@@ -25,10 +27,12 @@ func setupServices(r *repositories) *services {
 
 	userService := setupUserService(r.UserRepository)
 	authService := setupAuthService(userService, encryptor, tokener)
+	logService := setupLogService(r.LogRepository)
 
 	return &services{
 		UserService: userService,
 		AuthService: authService,
+		LogService:  logService,
 	}
 }
 
@@ -46,4 +50,8 @@ func setupAuthService(
 		encryptor,
 		tokener,
 	)
+}
+
+func setupLogService(logRepository logs.Repository) logs.Service {
+	return logs.NewService(logRepository)
 }

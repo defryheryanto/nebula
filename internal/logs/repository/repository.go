@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/defryheryanto/nebula/internal/logs"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -31,4 +33,19 @@ func (r *Repository) Insert(ctx context.Context, data any) error {
 	}
 
 	return nil
+}
+
+func (r *Repository) Find(ctx context.Context) ([]*logs.Log, error) {
+	cur, err := r.db.Find(ctx, bson.D{})
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*logs.Log
+	err = cur.All(ctx, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }

@@ -24,3 +24,12 @@ func (s *service) Push(ctx context.Context, data any) error {
 
 	return nil
 }
+
+func (s *service) List(ctx context.Context) ([]*Log, error) {
+	result, err := s.repository.Find(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}

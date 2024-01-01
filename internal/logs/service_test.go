@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/defryheryanto/nebula/internal/logs"
 	logsmock "github.com/defryheryanto/nebula/internal/logs/mock"
@@ -61,5 +62,39 @@ func TestService_Push(t *testing.T) {
 
 		err := s.service.Push(s.ctx, data)
 		assert.NoError(t, err)
+	})
+}
+
+func TestService_List(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Failed find", func(t *testing.T) {
+		s := setupTest(t)
+		s.repository.EXPECT().Find(gomock.Any()).Return(nil, s.mockedError)
+
+		res, err := s.service.List(s.ctx)
+		assert.Nil(t, res)
+		assert.Equal(t, s.mockedError, err)
+	})
+
+	t.Run("Success", func(t *testing.T) {
+		s := setupTest(t)
+		expected := []*logs.Log{
+			{
+				Timestamp: time.Now(),
+				Log:       "rwa",
+			},
+			{
+				Timestamp: time.Now(),
+				Log: map[string]any{
+					"foo": "bar",
+				},
+			},
+		}
+		s.repository.EXPECT().Find(s.ctx).Return(expected, nil)
+
+		res, err := s.service.List(s.ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, res)
 	})
 }

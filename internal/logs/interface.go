@@ -6,8 +6,10 @@ import "context"
 
 type Repository interface {
 	Insert(ctx context.Context, data any) error
+	Find(ctx context.Context) ([]*Log, error)
 }
 
 type Service interface {
 	Push(ctx context.Context, data any) error
+	List(ctx context.Context) ([]*Log, error)
 }

@@ -12,12 +12,12 @@ func NewService(repository Repository) Service {
 	}
 }
 
-func (s *service) Push(ctx context.Context, data any) error {
+func (s *service) Push(ctx context.Context, service string, data any) error {
 	if data == nil {
 		return nil
 	}
 
-	err := s.repository.Insert(ctx, data)
+	err := s.repository.Insert(ctx, service, data)
 	if err != nil {
 		return err
 	}

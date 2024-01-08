@@ -19,13 +19,15 @@ func New(db *mongo.Collection) *Repository {
 	}
 }
 
-func (r *Repository) Insert(ctx context.Context, data any) error {
+func (r *Repository) Insert(ctx context.Context, service string, data any) error {
 	type logData struct {
 		Timestamp time.Time
+		Service   string
 		Log       any
 	}
 	_, err := r.db.InsertOne(ctx, &logData{
 		Timestamp: time.Now(),
+		Service:   service,
 		Log:       data,
 	})
 	if err != nil {

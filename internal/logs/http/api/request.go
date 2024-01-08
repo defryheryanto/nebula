@@ -1,5 +1,6 @@
 package api
 
 type CreateLogRequest struct {
-	Log any `json:"log"`
+	ServiceName string `json:"service_name"`
+	Log         any    `json:"log"`
 }

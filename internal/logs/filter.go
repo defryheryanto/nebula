@@ -1,8 +1,9 @@
 package logs
 
 type Filter struct {
-	Page     int64 `json:"page"`
-	PageSize int64 `json:"page_size"`
+	Page        int64  `json:"page"`
+	PageSize    int64  `json:"page_size"`
+	ServiceName string `json:"service_name"`
 }
 
 func (f *Filter) GetPagination() (bool, int64, int64) {

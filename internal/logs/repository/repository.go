@@ -48,7 +48,12 @@ func (r *Repository) Find(ctx context.Context, filter *logs.Filter) ([]*logs.Log
 		opt = opt.SetLimit(int64(pageSize)).SetSkip(int64(skip))
 	}
 
-	cur, err := r.db.Find(ctx, bson.D{}, opt)
+	queryFilter := bson.M{}
+	if filter.ServiceName != "" {
+		queryFilter["service"] = filter.ServiceName
+	}
+
+	cur, err := r.db.Find(ctx, queryFilter, opt)
 	if err != nil {
 		return nil, err
 	}

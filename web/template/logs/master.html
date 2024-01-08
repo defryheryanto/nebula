@@ -23,6 +23,51 @@
         flex-grow: 1;
       }
     </style>
+    <script>
+        function setServiceSelect() {
+            var queryParams = new URLSearchParams(window.location.search);
+            var serviceParam = queryParams.get("service");
+
+            if (serviceParam) {
+                var selectElement = document.getElementById("serviceSelect");
+                if (selectElement) {
+                    var optionToSelect = selectElement.querySelector('option[value="' + serviceParam + '"]');
+
+                    if (optionToSelect) {
+                        optionToSelect.selected = true;
+                    }
+                }
+            }
+        }
+        
+        function handleServiceChange() {
+            var selectElement = document.getElementById("serviceSelect");
+            var selectedOption = selectElement.value;
+            var currentURL = window.location.href;
+
+            var url = new URL(currentURL);
+            if (url.searchParams.has("service")) {
+                url.searchParams.set("service", selectedOption);
+            } else {
+                url.searchParams.append("service", selectedOption);
+            }
+
+            if (url.searchParams.has("page")) {
+                url.searchParams.set("page", 1);
+            }
+
+            window.location.href = url.toString();
+        }
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            var selectElement = document.getElementById("serviceSelect");
+
+            if (selectElement) {
+                selectElement.addEventListener("change", handleServiceChange);
+                setServiceSelect()
+            }
+        });
+    </script>
     <body>
         <div class="container-fluid">
             <div class="row flex-nowrap">
@@ -34,9 +79,9 @@
                         </div>
                         <div class="row" style="width: 100%;">
                             <form>
-                                <select class="form-control">
+                                <select class="form-control" id="serviceSelect">
                                     {{ range .Data.Services }}
-                                        <option> {{ .Name }}</option>
+                                        <option value="{{ .Name }}"> {{ .Name }}</option>
                                     {{ end }}
                                 </select>
                             </form>

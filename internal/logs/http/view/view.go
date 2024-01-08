@@ -21,6 +21,7 @@ func NewHandler(logService logs.Service) *Handler {
 }
 
 func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
+	serviceName := r.URL.Query().Get("service")
 	page, pageSize, _ := request.GetPagination(r, 1, 20)
 
 	type servicesPayload struct {
@@ -47,9 +48,13 @@ func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	if serviceName == "" && len(serviceNames) > 0 {
+		serviceName = serviceNames[0]
+	}
 	resultLogs, err := h.logService.List(r.Context(), &logs.Filter{
-		Page:     page,
-		PageSize: pageSize,
+		Page:        page,
+		PageSize:    pageSize,
+		ServiceName: serviceName,
 	})
 	if err != nil {
 		response.FailedTemplate(w, err)

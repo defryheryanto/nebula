@@ -41,7 +41,7 @@ func (r *Repository) Insert(ctx context.Context, service string, data any) error
 }
 
 func (r *Repository) Find(ctx context.Context, filter *logs.Filter) ([]*logs.Log, error) {
-	opt := options.Find()
+	opt := options.Find().SetSort(bson.M{"timestamp": -1})
 	isPagination, page, pageSize := filter.GetPagination()
 	if isPagination {
 		skip := (page - 1) * pageSize

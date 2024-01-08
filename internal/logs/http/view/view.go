@@ -2,9 +2,11 @@ package view
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	"github.com/defryheryanto/nebula/internal/logs"
+	"github.com/defryheryanto/nebula/internal/request"
 	"github.com/defryheryanto/nebula/internal/response"
 )
 
@@ -19,6 +21,8 @@ func NewHandler(logService logs.Service) *Handler {
 }
 
 func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
+	page, pageSize, _ := request.GetPagination(r, 1, 20)
+
 	type servicesPayload struct {
 		Name string `json:"name"`
 	}
@@ -43,7 +47,10 @@ func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	resultLogs, err := h.logService.List(r.Context())
+	resultLogs, err := h.logService.List(r.Context(), &logs.Filter{
+		Page:     page,
+		PageSize: pageSize,
+	})
 	if err != nil {
 		response.FailedTemplate(w, err)
 		return
@@ -65,8 +72,22 @@ func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
 		logsData = append(logsData, logData)
 	}
 
-	response.SuccessTemplate(w, "Logs", "/template/logs/master.html", payload{
+	prevPageLink, err := request.GetPreviousPageLink(*r.URL)
+	if err != nil {
+		slog.Error("error LogsView.LogDashboardView.GetPreviousPageLink", "error", err)
+	}
+
+	nextPageLink, err := request.GetNextPageLink(*r.URL)
+	if err != nil {
+		slog.Error("error LogsView.LogDashboardView.GetNextPageLink", "error", err)
+	}
+
+	response.SuccessTemplate(w, "/template/logs/master.html", payload{
 		Services: servicesPayloads,
 		Logs:     logsData,
+	}, &response.TemplateOptions{
+		Title:            "Logs",
+		PreviousPageLink: prevPageLink,
+		NextPageLink:     nextPageLink,
 	})
 }

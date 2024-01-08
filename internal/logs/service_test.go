@@ -70,9 +70,9 @@ func TestService_List(t *testing.T) {
 
 	t.Run("Failed find", func(t *testing.T) {
 		s := setupTest(t)
-		s.repository.EXPECT().Find(gomock.Any()).Return(nil, s.mockedError)
+		s.repository.EXPECT().Find(gomock.Any(), gomock.Any()).Return(nil, s.mockedError)
 
-		res, err := s.service.List(s.ctx)
+		res, err := s.service.List(s.ctx, &logs.Filter{})
 		assert.Nil(t, res)
 		assert.Equal(t, s.mockedError, err)
 	})
@@ -91,10 +91,35 @@ func TestService_List(t *testing.T) {
 				},
 			},
 		}
-		s.repository.EXPECT().Find(s.ctx).Return(expected, nil)
+		filter := &logs.Filter{}
+		s.repository.EXPECT().Find(s.ctx, filter).Return(expected, nil)
 
-		res, err := s.service.List(s.ctx)
+		res, err := s.service.List(s.ctx, filter)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, res)
+	})
+}
+
+func TestService_GetAvailableServices(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Failed Get", func(t *testing.T) {
+		s := setupTest(t)
+
+		s.repository.EXPECT().AvailableServices(gomock.Any()).Return(nil, s.mockedError)
+
+		res, err := s.service.GetAvailableServices(s.ctx)
+		assert.Nil(t, res)
+		assert.Equal(t, s.mockedError, err)
+	})
+
+	t.Run("Success", func(t *testing.T) {
+		s := setupTest(t)
+		services := []string{"api1", "api2"}
+		s.repository.EXPECT().AvailableServices(gomock.Any()).Return(services, nil)
+
+		res, err := s.service.GetAvailableServices(s.ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, services, res)
 	})
 }

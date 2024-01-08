@@ -9,6 +9,7 @@ import (
 	"github.com/defryheryanto/nebula/pkg/mongoconverter"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Repository struct {
@@ -39,8 +40,15 @@ func (r *Repository) Insert(ctx context.Context, service string, data any) error
 	return nil
 }
 
-func (r *Repository) Find(ctx context.Context) ([]*logs.Log, error) {
-	cur, err := r.db.Find(ctx, bson.D{})
+func (r *Repository) Find(ctx context.Context, filter *logs.Filter) ([]*logs.Log, error) {
+	opt := options.Find()
+	isPagination, page, pageSize := filter.GetPagination()
+	if isPagination {
+		skip := (page - 1) * pageSize
+		opt = opt.SetLimit(int64(pageSize)).SetSkip(int64(skip))
+	}
+
+	cur, err := r.db.Find(ctx, bson.D{}, opt)
 	if err != nil {
 		return nil, err
 	}

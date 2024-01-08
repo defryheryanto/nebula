@@ -25,8 +25,8 @@ func (s *service) Push(ctx context.Context, service string, data any) error {
 	return nil
 }
 
-func (s *service) List(ctx context.Context) ([]*Log, error) {
-	result, err := s.repository.Find(ctx)
+func (s *service) List(ctx context.Context, filter *Filter) ([]*Log, error) {
+	result, err := s.repository.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}

@@ -19,14 +19,18 @@ func NewHandler(authService auth.Service) *Handler {
 
 func (h *Handler) LoginView(w http.ResponseWriter, r *http.Request) {
 	data := NewLoginTemplateData()
-	response.SuccessTemplate(w, "Login", data.TemplateName(), data)
+	response.SuccessTemplate(w, data.TemplateName(), data, &response.TemplateOptions{
+		Title: "Login",
+	})
 }
 
 func (h *Handler) LoginAction(w http.ResponseWriter, r *http.Request) {
 	token, err := h.AuthService.AuthenticateUser(r.Context(), r.FormValue("username"), r.FormValue("password"))
 	if err != nil {
 		templateData := NewLoginTemplateData().WithError(err)
-		response.SuccessTemplate(w, "Login", templateData.TemplateName(), templateData)
+		response.SuccessTemplate(w, templateData.TemplateName(), templateData, &response.TemplateOptions{
+			Title: "Login",
+		})
 		return
 	}
 	http.SetCookie(w, &http.Cookie{

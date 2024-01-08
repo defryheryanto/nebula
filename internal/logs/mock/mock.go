@@ -55,18 +55,18 @@ func (mr *MockRepositoryMockRecorder) AvailableServices(ctx any) *gomock.Call {
 }
 
 // Find mocks base method.
-func (m *MockRepository) Find(ctx context.Context) ([]*logs.Log, error) {
+func (m *MockRepository) Find(ctx context.Context, filter *logs.Filter) ([]*logs.Log, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Find", ctx)
+	ret := m.ctrl.Call(m, "Find", ctx, filter)
 	ret0, _ := ret[0].([]*logs.Log)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Find indicates an expected call of Find.
-func (mr *MockRepositoryMockRecorder) Find(ctx any) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) Find(ctx, filter any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockRepository)(nil).Find), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Find", reflect.TypeOf((*MockRepository)(nil).Find), ctx, filter)
 }
 
 // Insert mocks base method.
@@ -106,19 +106,34 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// List mocks base method.
-func (m *MockService) List(ctx context.Context) ([]*logs.Log, error) {
+// GetAvailableServices mocks base method.
+func (m *MockService) GetAvailableServices(ctx context.Context) ([]string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", ctx)
+	ret := m.ctrl.Call(m, "GetAvailableServices", ctx)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAvailableServices indicates an expected call of GetAvailableServices.
+func (mr *MockServiceMockRecorder) GetAvailableServices(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAvailableServices", reflect.TypeOf((*MockService)(nil).GetAvailableServices), ctx)
+}
+
+// List mocks base method.
+func (m *MockService) List(ctx context.Context, filter *logs.Filter) ([]*logs.Log, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", ctx, filter)
 	ret0, _ := ret[0].([]*logs.Log)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // List indicates an expected call of List.
-func (mr *MockServiceMockRecorder) List(ctx any) *gomock.Call {
+func (mr *MockServiceMockRecorder) List(ctx, filter any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockService)(nil).List), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockService)(nil).List), ctx, filter)
 }
 
 // Push mocks base method.

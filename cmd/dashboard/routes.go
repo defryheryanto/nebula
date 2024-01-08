@@ -20,5 +20,9 @@ func buildRoutes(h *handlers) http.Handler {
 		r.Post("/api/logs", h.LogAPIHandler.CreateLog)
 	})
 
+	root.Route("/dashboard", func(r chi.Router) {
+		r.Get("/logs", h.LogViewhandler.LogDashboardView)
+	})
+
 	return root
 }

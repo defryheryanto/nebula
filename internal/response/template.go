@@ -13,7 +13,7 @@ func FailedTemplate(w http.ResponseWriter, err error) {
 	t.Execute(w, nil)
 }
 
-func SuccessTemplate(w http.ResponseWriter, templateName string, data any) {
+func SuccessTemplate(w http.ResponseWriter, title string, templateName string, data any) {
 	folderPath := config.WebFolderPath
 	t, err := template.ParseFiles(fmt.Sprintf("%s%s", folderPath, templateName))
 	if err != nil {
@@ -27,11 +27,13 @@ func SuccessTemplate(w http.ResponseWriter, templateName string, data any) {
 		Template string
 	}
 	type payload struct {
-		Path path
-		Data any
+		Title string
+		Path  path
+		Data  any
 	}
 
 	p := &payload{
+		Title: title,
 		Path: path{
 			Assets:   fmt.Sprintf("%s/assets", folderPath),
 			Static:   fmt.Sprintf("%s/static", folderPath),

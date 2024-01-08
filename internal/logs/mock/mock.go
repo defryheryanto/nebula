@@ -39,6 +39,21 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 	return m.recorder
 }
 
+// AvailableServices mocks base method.
+func (m *MockRepository) AvailableServices(ctx context.Context) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AvailableServices", ctx)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AvailableServices indicates an expected call of AvailableServices.
+func (mr *MockRepositoryMockRecorder) AvailableServices(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AvailableServices", reflect.TypeOf((*MockRepository)(nil).AvailableServices), ctx)
+}
+
 // Find mocks base method.
 func (m *MockRepository) Find(ctx context.Context) ([]*logs.Log, error) {
 	m.ctrl.T.Helper()

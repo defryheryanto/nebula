@@ -2,9 +2,11 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/defryheryanto/nebula/internal/logs"
+	"github.com/defryheryanto/nebula/pkg/mongoconverter"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -47,6 +49,27 @@ func (r *Repository) Find(ctx context.Context) ([]*logs.Log, error) {
 	err = cur.All(ctx, &result)
 	if err != nil {
 		return nil, err
+	}
+
+	for _, res := range result {
+		if bsonD, ok := res.Log.(bson.D); ok {
+			res.Log = mongoconverter.BsonDToMap(bsonD)
+		}
+	}
+
+	return result, nil
+}
+
+func (r *Repository) AvailableServices(ctx context.Context) ([]string, error) {
+	values, err := r.db.Distinct(ctx, "service", bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]string, 0, len(values))
+
+	for _, val := range values {
+		result = append(result, fmt.Sprintf("%v", val))
 	}
 
 	return result, nil

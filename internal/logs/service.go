@@ -33,3 +33,12 @@ func (s *service) List(ctx context.Context) ([]*Log, error) {
 
 	return result, nil
 }
+
+func (s *service) GetAvailableServices(ctx context.Context) ([]string, error) {
+	result, err := s.repository.AvailableServices(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}

@@ -78,12 +78,12 @@
                                             <th scope="row">{{ .Timestamp }}</th>
                                             <td>{{ $log.Log }}</td>
                                         </tr>
-                                        <tr>
-                                        <td colspan="3" class="hiddenRow">
-                                            <div class="collapse" id="details{{$index}}">
-                                                <p><code>{{ $log.Log }}</code></p>
-                                            </div>
-                                        </td>
+                                        <tr class="invisible">
+                                            <td colspan="2" class="hiddenRow">
+                                                <div class="collapse" id="details{{$index}}">
+                                                    <p><code class="visible">{{ $log.Log }}</code></p>
+                                                </div>
+                                            </td>
                                         </tr>
                                     {{ end }}
                                 </tbody>

@@ -22,9 +22,13 @@ func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
 	type servicesPayload struct {
 		Name string `json:"name"`
 	}
+	type logPayload struct {
+		Timestamp string `json:"timestamp"`
+		Log       any    `json:"log"`
+	}
 	type payload struct {
 		Services []*servicesPayload `json:"services"`
-		Logs     []*logs.Log        `json:"logs"`
+		Logs     []*logPayload      `json:"logs"`
 	}
 
 	serviceNames, err := h.logService.GetAvailableServices(r.Context())
@@ -45,18 +49,24 @@ func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logsData := make([]*logPayload, 0, len(resultLogs))
 	for _, log := range resultLogs {
+		logData := &logPayload{
+			Timestamp: log.Timestamp.Local().Format("02 Jan 2006 15:04:05 MST"),
+			Log:       log.Log,
+		}
 		if mapLog, ok := log.Log.(map[string]any); ok {
 			logString, err := json.Marshal(&mapLog)
 			if err != nil {
 				continue
 			}
-			log.Log = string(logString)
+			logData.Log = string(logString)
 		}
+		logsData = append(logsData, logData)
 	}
 
 	response.SuccessTemplate(w, "Logs", "/template/logs/master.html", payload{
 		Services: servicesPayloads,
-		Logs:     resultLogs,
+		Logs:     logsData,
 	})
 }

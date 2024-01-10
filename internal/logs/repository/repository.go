@@ -59,6 +59,12 @@ func (r *Repository) Find(ctx context.Context, filter *logs.Filter) ([]*logs.Log
 			"$regex": regexPattern,
 		}
 	}
+	if !filter.StartDate.IsZero() && !filter.EndDate.IsZero() {
+		queryFilter["timestamp"] = bson.M{
+			"$gte": filter.StartDate,
+			"$lte": filter.EndDate,
+		}
+	}
 
 	cur, err := r.db.Find(ctx, queryFilter, opt)
 	if err != nil {

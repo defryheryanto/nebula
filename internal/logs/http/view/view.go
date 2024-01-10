@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/defryheryanto/nebula/internal/logs"
 	"github.com/defryheryanto/nebula/internal/request"
@@ -21,9 +22,6 @@ func NewHandler(logService logs.Service) *Handler {
 }
 
 func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
-	serviceName := r.URL.Query().Get("service")
-	search := r.URL.Query().Get("search")
-	page, pageSize, _ := request.GetPagination(r, 1, 20)
 
 	type servicesPayload struct {
 		Name string `json:"name"`
@@ -49,15 +47,39 @@ func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	serviceName := r.URL.Query().Get("service")
+	search := r.URL.Query().Get("search")
+	page, pageSize, _ := request.GetPagination(r, 1, 20)
 	if serviceName == "" && len(serviceNames) > 0 {
 		serviceName = serviceNames[0]
 	}
-	resultLogs, err := h.logService.List(r.Context(), &logs.Filter{
+
+	filter := &logs.Filter{
 		Page:        page,
 		PageSize:    pageSize,
 		ServiceName: serviceName,
 		Search:      search,
-	})
+	}
+
+	startDateString := r.URL.Query().Get("startDate")
+	if startDateString != "" {
+		var parseErr error
+		filter.StartDate, parseErr = time.Parse(time.RFC3339Nano, startDateString)
+		if parseErr != nil {
+			slog.Error("error LogsView.LogDashboardView.ParseStartDate", "error", parseErr)
+		}
+	}
+
+	endDateString := r.URL.Query().Get("endDate")
+	if endDateString != "" {
+		var parseErr error
+		filter.EndDate, parseErr = time.Parse(time.RFC3339Nano, endDateString)
+		if parseErr != nil {
+			slog.Error("error LogsView.LogDashboardView.ParseEndDate", "error", parseErr)
+		}
+	}
+
+	resultLogs, err := h.logService.List(r.Context(), filter)
 	if err != nil {
 		response.FailedTemplate(w, err)
 		return

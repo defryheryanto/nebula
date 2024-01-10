@@ -22,6 +22,7 @@ func NewHandler(logService logs.Service) *Handler {
 
 func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
 	serviceName := r.URL.Query().Get("service")
+	search := r.URL.Query().Get("search")
 	page, pageSize, _ := request.GetPagination(r, 1, 20)
 
 	type servicesPayload struct {
@@ -55,6 +56,7 @@ func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
 		Page:        page,
 		PageSize:    pageSize,
 		ServiceName: serviceName,
+		Search:      search,
 	})
 	if err != nil {
 		response.FailedTemplate(w, err)

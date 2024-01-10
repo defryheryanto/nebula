@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"time"
 
 	"github.com/defryheryanto/nebula/internal/logs"
@@ -51,6 +52,12 @@ func (r *Repository) Find(ctx context.Context, filter *logs.Filter) ([]*logs.Log
 	queryFilter := bson.M{}
 	if filter.ServiceName != "" {
 		queryFilter["service"] = filter.ServiceName
+	}
+	if filter.Search != "" {
+		regexPattern := fmt.Sprintf(".*%s.*", regexp.QuoteMeta(filter.Search))
+		queryFilter["log"] = bson.M{
+			"$regex": regexPattern,
+		}
 	}
 
 	cur, err := r.db.Find(ctx, queryFilter, opt)

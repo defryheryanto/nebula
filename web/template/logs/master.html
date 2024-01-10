@@ -58,14 +58,52 @@
 
             window.location.href = url.toString();
         }
+
+        function handleSearch() {
+            let searchValue = document.getElementById('txtSearch').value;
+            var currentURL = window.location.href;
+
+            var url = new URL(currentURL);
+            if (url.searchParams.has("search")) {
+                url.searchParams.set("search", searchValue)
+            } else {
+                url.searchParams.append("search", searchValue)
+            }
+
+            if (url.searchParams.has("page")) {
+                url.searchParams.set("page", 1);
+            }
+            
+            window.location.href = url.toString();
+        }
+
+        function setSearchInputValue() {
+            let searchElement = document.getElementById('txtSearch');
+            var currentURL = window.location.href;
+
+            var url = new URL(currentURL);
+            if (url.searchParams.has("search")) {
+                searchElement.value = url.searchParams.get("search");
+            }
+        }
         
         document.addEventListener("DOMContentLoaded", function() {
             var selectElement = document.getElementById("serviceSelect");
+            let searchElement = document.getElementById('txtSearch');
 
             if (selectElement) {
                 selectElement.addEventListener("change", handleServiceChange);
                 setServiceSelect()
             }
+
+            if (searchElement) {
+                searchElement.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        handleSearch();
+                    }
+                });
+            }
+            setSearchInputValue()
         });
     </script>
     <body>
@@ -91,7 +129,7 @@
                 <div class="col py-3">
                     <div class="flex-container">
                         <div class="flex-grow" style="margin-right: 5px;">
-                            <input type="text" class="form-control" placeholder="Search">
+                            <input type="text" class="form-control" id="txtSearch" placeholder="Search">
                         </div>
                         <div style="margin-right: 5px;">
                             <button class="btn btn-outline-secondary rounded-0 btn-block" style="background-color: white;">
@@ -103,6 +141,7 @@
                                 type="submit"
                                 class="btn btn-primary btn-block mb-2"
                                 style="border-color: #0D0E24; border-radius: 0;background-color: #0D0E24;"
+                                onclick="handleSearch()"
                             >
                                 Search
                             </button>

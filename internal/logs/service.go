@@ -1,6 +1,9 @@
 package logs
 
-import "context"
+import (
+	"context"
+	"encoding/json"
+)
 
 type service struct {
 	repository Repository
@@ -17,7 +20,11 @@ func (s *service) Push(ctx context.Context, service string, data any) error {
 		return nil
 	}
 
-	err := s.repository.Insert(ctx, service, data)
+	dataBytes, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	err = s.repository.Insert(ctx, service, string(dataBytes))
 	if err != nil {
 		return err
 	}

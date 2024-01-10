@@ -14,12 +14,12 @@ func GetPagination(r *http.Request, defaultPage, defaultPageSize int64) (int64, 
 
 	page, err := strconv.ParseInt(pageString, 10, 64)
 	if err != nil {
-		return 0, 0, handlederror.ValidationError(err.Error()).WithMessage("Page number not valid")
+		return defaultPage, defaultPageSize, handlederror.ValidationError(err.Error()).WithMessage("Page number not valid")
 	}
 
 	pageSize, err := strconv.ParseInt(pageSizeString, 10, 64)
 	if err != nil {
-		return 0, 0, handlederror.ValidationError(err.Error()).WithMessage("Page Size not valid")
+		return page, defaultPageSize, handlederror.ValidationError(err.Error()).WithMessage("Page Size not valid")
 	}
 
 	return page, pageSize, nil
@@ -29,6 +29,9 @@ func GetPreviousPageLink(originalURL url.URL) (string, error) {
 	queryParams := originalURL.Query()
 
 	pageStr := queryParams.Get("page")
+	if pageStr == "" {
+		pageStr = "1"
+	}
 
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {
@@ -50,6 +53,9 @@ func GetNextPageLink(originalURL url.URL) (string, error) {
 	queryParams := originalURL.Query()
 
 	pageStr := queryParams.Get("page")
+	if pageStr == "" {
+		pageStr = "1"
+	}
 
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {

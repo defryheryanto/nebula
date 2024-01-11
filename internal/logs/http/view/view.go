@@ -62,7 +62,12 @@ func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	startDateString := r.URL.Query().Get("startDate")
-	if startDateString != "" {
+	if startDateString == "" {
+		now := time.Now()
+		year, month, day := now.Local().Date()
+		filter.StartDate = time.Date(year, month, day, 0, 0, 0, 0, now.Location())
+		slog.Info(filter.StartDate.Format(time.RFC3339Nano))
+	} else {
 		var parseErr error
 		filter.StartDate, parseErr = time.Parse(time.RFC3339Nano, startDateString)
 		if parseErr != nil {
@@ -71,7 +76,12 @@ func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	endDateString := r.URL.Query().Get("endDate")
-	if endDateString != "" {
+	if endDateString == "" {
+		now := time.Now()
+		year, month, day := now.Local().Date()
+		filter.EndDate = time.Date(year, month, day, 23, 59, 59, 999999999, now.Location())
+		slog.Info(filter.EndDate.Format(time.RFC3339Nano))
+	} else {
 		var parseErr error
 		filter.EndDate, parseErr = time.Parse(time.RFC3339Nano, endDateString)
 		if parseErr != nil {

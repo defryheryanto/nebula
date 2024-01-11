@@ -3,6 +3,7 @@ package response
 import (
 	"fmt"
 	"html/template"
+	"log/slog"
 	"net/http"
 
 	"github.com/defryheryanto/nebula/config"
@@ -27,6 +28,23 @@ func SuccessTemplate(w http.ResponseWriter, templateName string, data any, templ
 		return
 	}
 
+	executeTemplate(w, t, data, templateOption)
+}
+
+func MasterTemplate(w http.ResponseWriter, templateName string, data any, templateOption *TemplateOptions) {
+	folderPath := config.WebFolderPath
+	masterPage := fmt.Sprintf("%s/template/master.html", folderPath)
+	t, err := template.ParseFiles(masterPage, fmt.Sprintf("%s%s", folderPath, templateName))
+	if err != nil {
+		FailedTemplate(w, err)
+		return
+	}
+
+	executeTemplate(w, t, data, templateOption)
+}
+
+func executeTemplate(w http.ResponseWriter, t *template.Template, data any, templateOption *TemplateOptions) {
+	folderPath := config.WebFolderPath
 	type path struct {
 		Assets   string
 		Static   string
@@ -65,5 +83,8 @@ func SuccessTemplate(w http.ResponseWriter, templateName string, data any, templ
 		},
 		Data: data,
 	}
-	t.Execute(w, p)
+	e := t.Execute(w, p)
+	if e != nil {
+		slog.Error("error exec template", "error", e)
+	}
 }

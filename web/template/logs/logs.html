@@ -1,0 +1,199 @@
+{{ define "content" }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <style>
+      .flex-container {
+        display: flex;
+      }
+  
+      .flex-grow {
+        flex-grow: 1;
+      }
+    </style>
+    <script>
+        function handleSearch() {
+            let searchValue = document.getElementById('txtSearch').value;
+            var currentURL = window.location.href;
+
+            var url = new URL(currentURL);
+            if (url.searchParams.has("search")) {
+                url.searchParams.set("search", searchValue)
+            } else {
+                url.searchParams.append("search", searchValue)
+            }
+
+            if (url.searchParams.has("page")) {
+                url.searchParams.set("page", 1);
+            }
+            
+            let calendarSearchData = $('#calendarSearch').data('daterangepicker')
+            let startDate = calendarSearchData.startDate
+            let endDate = calendarSearchData.endDate
+
+            if (startDate && endDate) {
+                url.searchParams.set("startDate", startDate.toISOString())
+                url.searchParams.set("endDate", endDate.toISOString())
+            }
+            
+            window.location.href = url.toString();
+        }
+
+        function setSearchInputValue() {
+            let searchElement = document.getElementById('txtSearch');
+            var currentURL = window.location.href;
+
+            var url = new URL(currentURL);
+            if (url.searchParams.has("search")) {
+                searchElement.value = url.searchParams.get("search");
+            }
+        }
+
+        function setUpCalendarSearch() {
+            let startDate = moment();
+            let endDate = moment();
+            
+            var currentURL = window.location.href;
+            var url = new URL(currentURL);
+            if (url.searchParams.has("startDate") && url.searchParams.has("endDate")) {
+                startDate = moment(url.searchParams.get("startDate"))
+                endDate = moment(url.searchParams.get("endDate"))
+            }
+
+            let dateRanges = {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+            function setCalendarSpan(start, end) {
+                for (let range in dateRanges) {
+                    if (
+                        start.isSame(dateRanges[range][0], 'day') &&
+                        end.isSame(dateRanges[range][1], 'day')
+                    ) {
+                        $('#calendarSearch span').html(range);
+                        return
+                    }
+                }
+
+                let today = moment();
+                let dateFormat = 'MMM DD, YYYY HH:mm:ss'
+                if (today.format('ddmmyyyy') === start.format('ddmmyyyy') && today.format('ddmmyyyy') === start.format('ddmmyyyy')) {
+                    dateFormat = 'HH:mm:ss'
+                }
+
+                $('#calendarSearch span').html(start.format(dateFormat) + ' - ' + end.format(dateFormat));
+            }
+
+            setCalendarSpan(startDate, endDate);
+
+            $('#calendarSearch').daterangepicker({
+                timePicker: true,
+                startDate: startDate,
+                endDate: endDate,
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                }
+            }, setCalendarSpan);
+        }
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            let searchElement = document.getElementById('txtSearch');
+            if (searchElement) {
+                searchElement.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        handleSearch();
+                    }
+                });
+            }
+            setSearchInputValue();
+
+            setUpCalendarSearch();
+        });
+    </script>
+    <h3 style="margin-bottom: 30px;">Logs</h3>
+    <div class="flex-container">
+        <div class="flex-grow" style="margin-right: 5px;">
+            <input type="text" class="form-control" id="txtSearch" placeholder="Search">
+        </div>
+        <div style="margin-right: 5px;">
+            <div
+                id="calendarSearch"
+                style="
+                    background: #fff;
+                    cursor: pointer;
+                    padding: 5px 10px;
+                    border: 1px solid #ccc;
+                    width: 330px;
+                    height: 38px;
+                    border-radius: 6px;
+                "
+            >
+                <i class="fa fa-calendar"></i>&nbsp;
+                <span style="font-size: small;"></span> <i class="fa fa-caret-down"></i>
+            </div>
+        </div>
+        <div>
+            <button
+                type="submit"
+                class="btn btn-primary btn-block mb-2"
+                style="border-color: #0D0E24; border-radius: 0;background-color: #0D0E24;"
+                onclick="handleSearch()"
+            >
+                Search
+            </button>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-hover" style="table-layout: fixed;">
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">Timestamp</th>
+                        <th style="width: 70%;">Log</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range $index, $log := .Data.Logs }}
+                        <tr data-toggle="collapse" data-target="#details{{$index}}" class="accordion-toggle">
+                            <th scope="row">{{ .Timestamp }}</th>
+                            <td>{{ $log.Log }}</td>
+                        </tr>
+                        <tr class="invisible">
+                            <td colspan="2" class="hiddenRow">
+                                <div class="collapse" id="details{{$index}}">
+                                    <p><code class="visible">{{ $log.Log }}</code></p>
+                                </div>
+                            </td>
+                        </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="{{ .Pagination.PreviousPage }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{{ .Pagination.NextPage }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+{{ end }}

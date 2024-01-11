@@ -111,7 +111,7 @@ func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
 		slog.Error("error LogsView.LogDashboardView.GetNextPageLink", "error", err)
 	}
 
-	response.SuccessTemplate(w, "/template/logs/master.html", payload{
+	response.MasterTemplate(w, "/template/logs/logs.html", payload{
 		Services: servicesPayloads,
 		Logs:     logsData,
 	}, &response.TemplateOptions{

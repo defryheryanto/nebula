@@ -15,7 +15,7 @@ func NewService(repository Repository) Service {
 	}
 }
 
-func (s *service) Push(ctx context.Context, service string, data any) error {
+func (s *service) Push(ctx context.Context, service string, logType LogType, data any) error {
 	if data == nil {
 		return nil
 	}
@@ -24,7 +24,7 @@ func (s *service) Push(ctx context.Context, service string, data any) error {
 	if err != nil {
 		return err
 	}
-	err = s.repository.Insert(ctx, service, string(dataBytes))
+	err = s.repository.Insert(ctx, service, logType, string(dataBytes))
 	if err != nil {
 		return err
 	}

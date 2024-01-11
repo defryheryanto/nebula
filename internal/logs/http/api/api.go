@@ -26,7 +26,7 @@ func (h *Handler) CreateLog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.logService.Push(r.Context(), body.ServiceName, body.Log)
+	err = h.logService.Push(r.Context(), body.ServiceName, logs.LogType(body.LogType), body.Log)
 	if err != nil {
 		response.FailedJSON(w, r, err)
 		return

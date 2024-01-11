@@ -2,6 +2,7 @@ package logs_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -39,15 +40,15 @@ func TestService_Push(t *testing.T) {
 	t.Run("Nil data", func(t *testing.T) {
 		s := setupTest(t)
 
-		err := s.service.Push(s.ctx, "nebula-dashboard", nil)
+		err := s.service.Push(s.ctx, "nebula-dashboard", logs.StdLogType, nil)
 		assert.NoError(t, err)
 	})
 
 	t.Run("Insert Failed", func(t *testing.T) {
 		s := setupTest(t)
-		s.repository.EXPECT().Insert(gomock.Any(), gomock.Any(), gomock.Any()).Return(s.mockedError)
+		s.repository.EXPECT().Insert(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(s.mockedError)
 
-		err := s.service.Push(s.ctx, "nebula-dashboard", map[string]any{
+		err := s.service.Push(s.ctx, "nebula-dashboard", logs.StdLogType, map[string]any{
 			"foo": "bar",
 		})
 		assert.Equal(t, s.mockedError, err)
@@ -58,9 +59,11 @@ func TestService_Push(t *testing.T) {
 		data := map[string]any{
 			"foo": "bar",
 		}
-		s.repository.EXPECT().Insert(s.ctx, "nebula-dashboard", data).Return(nil)
+		dataBytes, err := json.Marshal(data)
+		assert.NoError(t, err)
+		s.repository.EXPECT().Insert(s.ctx, "nebula-dashboard", logs.StdLogType, string(dataBytes)).Return(nil)
 
-		err := s.service.Push(s.ctx, "nebula-dashboard", data)
+		err = s.service.Push(s.ctx, "nebula-dashboard", logs.StdLogType, data)
 		assert.NoError(t, err)
 	})
 }

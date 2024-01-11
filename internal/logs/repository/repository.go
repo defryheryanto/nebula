@@ -23,15 +23,17 @@ func New(db *mongo.Collection) *Repository {
 	}
 }
 
-func (r *Repository) Insert(ctx context.Context, service string, data any) error {
+func (r *Repository) Insert(ctx context.Context, service string, logType logs.LogType, data any) error {
 	type logData struct {
 		Timestamp time.Time
 		Service   string
+		LogType   string
 		Log       any
 	}
 	_, err := r.db.InsertOne(ctx, &logData{
 		Timestamp: time.Now(),
 		Service:   service,
+		LogType:   string(logType),
 		Log:       data,
 	})
 	if err != nil {

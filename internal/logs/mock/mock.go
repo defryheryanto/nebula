@@ -70,17 +70,17 @@ func (mr *MockRepositoryMockRecorder) Find(ctx, filter any) *gomock.Call {
 }
 
 // Insert mocks base method.
-func (m *MockRepository) Insert(ctx context.Context, service string, data any) error {
+func (m *MockRepository) Insert(ctx context.Context, service string, logType logs.LogType, data any) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Insert", ctx, service, data)
+	ret := m.ctrl.Call(m, "Insert", ctx, service, logType, data)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Insert indicates an expected call of Insert.
-func (mr *MockRepositoryMockRecorder) Insert(ctx, service, data any) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) Insert(ctx, service, logType, data any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockRepository)(nil).Insert), ctx, service, data)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockRepository)(nil).Insert), ctx, service, logType, data)
 }
 
 // MockService is a mock of Service interface.
@@ -137,15 +137,15 @@ func (mr *MockServiceMockRecorder) List(ctx, filter any) *gomock.Call {
 }
 
 // Push mocks base method.
-func (m *MockService) Push(ctx context.Context, service string, data any) error {
+func (m *MockService) Push(ctx context.Context, service string, logType logs.LogType, data any) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Push", ctx, service, data)
+	ret := m.ctrl.Call(m, "Push", ctx, service, logType, data)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Push indicates an expected call of Push.
-func (mr *MockServiceMockRecorder) Push(ctx, service, data any) *gomock.Call {
+func (mr *MockServiceMockRecorder) Push(ctx, service, logType, data any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Push", reflect.TypeOf((*MockService)(nil).Push), ctx, service, data)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Push", reflect.TypeOf((*MockService)(nil).Push), ctx, service, logType, data)
 }

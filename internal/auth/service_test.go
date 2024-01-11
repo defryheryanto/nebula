@@ -46,6 +46,8 @@ func setupTest(t *testing.T) *components {
 }
 
 func TestService_AuthenticateUser(t *testing.T) {
+	t.Parallel()
+
 	t.Run("Failed get user", func(t *testing.T) {
 		s := setupTest(t)
 		s.userService.EXPECT().GetByUsername(gomock.Any(), gomock.Any()).Return(nil, s.mockedErr)
@@ -104,5 +106,32 @@ func TestService_AuthenticateUser(t *testing.T) {
 		token, err := s.service.AuthenticateUser(s.ctx, "username", "password")
 		assert.NoError(t, err)
 		assert.Equal(t, "token", token)
+	})
+}
+
+func TestService_ValidateToken(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Failed to validate", func(t *testing.T) {
+		s := setupTest(t)
+		s.tokener.EXPECT().Validate(gomock.Any(), gomock.Any()).Return(nil, s.mockedErr)
+
+		sess, err := s.service.ValidateToken(s.ctx, "token")
+		assert.Nil(t, sess)
+		assert.Equal(t, handlederror.ErrTokenInvalid, err)
+	})
+
+	t.Run("Success", func(t *testing.T) {
+		s := setupTest(t)
+		expected := &auth.Session{
+			SessionID: "session-uuid",
+			UserID:    1,
+			Username:  "username",
+		}
+		s.tokener.EXPECT().Validate(s.ctx, "token").Return(expected, nil)
+
+		sess, err := s.service.ValidateToken(s.ctx, "token")
+		assert.NoError(t, err)
+		assert.Equal(t, expected, sess)
 	})
 }

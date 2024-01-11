@@ -63,3 +63,12 @@ func (s *service) AuthenticateUser(ctx context.Context, username string, passwor
 
 	return token, nil
 }
+
+func (s *service) ValidateToken(ctx context.Context, token string) (*Session, error) {
+	currentSession, err := s.tokener.Validate(ctx, token)
+	if err != nil {
+		return nil, handlederror.ErrTokenInvalid
+	}
+
+	return currentSession, nil
+}

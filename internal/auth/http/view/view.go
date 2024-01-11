@@ -37,7 +37,8 @@ func (h *Handler) LoginAction(w http.ResponseWriter, r *http.Request) {
 		Name:     "access_token",
 		Value:    token,
 		HttpOnly: true,
+		Path:     "/",
 	})
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/dashboard/logs", http.StatusSeeOther)
 }

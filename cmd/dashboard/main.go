@@ -30,7 +30,7 @@ func main() {
 
 		appServer = &http.Server{
 			Addr:    fmt.Sprintf(":%s", config.Port),
-			Handler: buildRoutes(setupHandler(service)),
+			Handler: buildRoutes(setupHandler(service), service.AuthService),
 		}
 
 		slog.Info(fmt.Sprintf("starting server on %s", appServer.Addr))

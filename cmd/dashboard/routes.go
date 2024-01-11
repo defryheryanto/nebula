@@ -5,10 +5,11 @@ import (
 	"net/http"
 
 	"github.com/defryheryanto/nebula/config"
+	"github.com/defryheryanto/nebula/internal/auth"
 	"github.com/go-chi/chi/v5"
 )
 
-func buildRoutes(h *handlers) http.Handler {
+func buildRoutes(h *handlers, authService auth.Service) http.Handler {
 	root := chi.NewRouter()
 
 	root.Handle("/static/assets/*", http.StripPrefix("/static/assets/", http.FileServer(http.Dir(fmt.Sprintf("%s/assets", config.WebFolderPath)))))
@@ -21,6 +22,7 @@ func buildRoutes(h *handlers) http.Handler {
 	})
 
 	root.Route("/dashboard", func(r chi.Router) {
+		r.Use(auth.CheckTokenMiddleware(authService))
 		r.Get("/logs", h.LogViewhandler.LogDashboardView)
 	})
 

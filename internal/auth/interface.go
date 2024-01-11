@@ -6,4 +6,5 @@ import "context"
 
 type Service interface {
 	AuthenticateUser(ctx context.Context, username string, password string) (string, error)
+	ValidateToken(ctx context.Context, token string) (*Session, error)
 }

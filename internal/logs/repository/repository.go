@@ -67,6 +67,9 @@ func (r *Repository) Find(ctx context.Context, filter *logs.Filter) ([]*logs.Log
 			"$lte": filter.EndDate,
 		}
 	}
+	if filter.LogType != "" {
+		queryFilter["logtype"] = filter.LogType
+	}
 
 	cur, err := r.db.Find(ctx, queryFilter, opt)
 	if err != nil {

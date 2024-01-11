@@ -9,6 +9,7 @@ type Filter struct {
 	Search      string    `json:"search"`
 	StartDate   time.Time `json:"start_date"`
 	EndDate     time.Time `json:"end_date"`
+	LogType     LogType   `json:"log_type"`
 }
 
 func (f *Filter) GetPagination() (bool, int64, int64) {

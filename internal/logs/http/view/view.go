@@ -54,11 +54,16 @@ func (h *Handler) LogDashboardView(w http.ResponseWriter, r *http.Request) {
 		serviceName = serviceNames[0]
 	}
 
+	logType := r.URL.Query().Get("logType")
 	filter := &logs.Filter{
 		Page:        page,
 		PageSize:    pageSize,
 		ServiceName: serviceName,
 		Search:      search,
+		LogType:     logs.LogTypeFromString(logType),
+	}
+	if filter.LogType == "" {
+		filter.LogType = logs.StdLogType
 	}
 
 	startDateString := r.URL.Query().Get("startDate")

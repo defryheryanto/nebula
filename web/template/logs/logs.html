@@ -54,8 +54,8 @@
         }
 
         function setUpCalendarSearch() {
-            let startDate = moment();
-            let endDate = moment();
+            let startDate = moment().startOf('day');
+            let endDate = moment().endOf('day');
             
             var currentURL = window.location.href;
             var url = new URL(currentURL);
@@ -67,7 +67,7 @@
             let dateRanges = {
                 'Today': [
                     moment().startOf('day'),
-                    moment(),
+                    moment().endOf('day'),
                 ],
                 'Yesterday': [
                     moment().subtract(1, 'days').startOf('day'),
@@ -75,11 +75,11 @@
                 ],
                 'Last 7 Days': [
                     moment().subtract(6, 'days').startOf('day'),
-                    moment(),
+                    moment().endOf('day'),
                 ],
                 'Last 30 Days': [
                     moment().subtract(29, 'days').startOf('day'),
-                    moment(),
+                    moment().endOf('day'),
                 ],
                 'This Month': [
                     moment().startOf('month').startOf('day'),
